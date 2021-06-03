@@ -1,2 +1,4 @@
 *.json
 .venv
+api.http
+__pycache__/
