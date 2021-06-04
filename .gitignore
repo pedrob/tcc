@@ -2,3 +2,4 @@
 .venv
 api.http
 __pycache__/
+redis-data/
