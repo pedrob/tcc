@@ -2,7 +2,9 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
+  flex-direction: column;
+  max-width: 1280px;
   width: 100%;
-  justify-content: space-between;
-  margin: 20px 0;
+  padding: 20px;
+  margin: 0 auto;
 `;

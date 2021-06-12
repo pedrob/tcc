@@ -15,6 +15,7 @@ export default createGlobalStyle`
       font-size: 14px;
       text-rendering: optimizeLegibility;
       -webkit-font-smoothing: antialiased !important;
+      background-color: #f4f6f7;
       .error {
         box-shadow: 0 -1px 4px var(--error), 0 2px 4px var(--error);
       }

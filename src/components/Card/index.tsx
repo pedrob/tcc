@@ -1,14 +1,14 @@
 import React, { ReactNode } from 'react';
 
-import { Container } from './styles';
+import { Container, ContainerProps } from './styles';
 
-interface Props {
+interface Props extends ContainerProps {
   children: ReactNode;
 }
 
-const Card = ({ children }: Props) => {
+const Card = ({ children, ...props }: Props) => {
   return (
-    <Container>
+    <Container {...props} >
       {children}
     </Container>
   );
