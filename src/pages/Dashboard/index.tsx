@@ -4,6 +4,28 @@ import { Line, Pie } from 'react-chartjs-2';
 import LineContainer from '../../components/LineContainer';
 import Card from '../../components/Card';
 import Content from '../../components/Content';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { getData } from '../../api/api';
+
+interface Dataset {
+  label: string;
+  data: number[];
+  fill?: boolean;
+  backgroundColor?: string;
+  borderColor?: string | string[];
+  borderWidth?: number
+}
+interface DataChart {
+  labels: string[];
+  datasets: Dataset[];
+}
+
+interface Totals {
+  total: number;
+  positiveTotal: number;
+  negativeTotal: number;
+}
 
 const data = {
   labels: ['1', '2', '3', '4', '5', '6'],
@@ -59,6 +81,34 @@ const options = {
 
 
 const Dashboard = () => {
+  const [dataFrequency, setDataFrequence] = useState<DataChart>()
+  const [totals, setTotals] = useState<Totals>();
+
+  useEffect(() => {
+    const getChartsData = async () => {
+      const data = await getData();
+      setDataFrequence({
+        labels: data.datas,
+        datasets: [
+          {
+            label: 'Frequencia de menções pelo tempo',
+            data: data.mencoes,
+            fill: false,
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgba(255, 99, 132, 0.2)',
+          }
+        ]
+      })
+      setTotals({
+        total: data.total,
+        negativeTotal: data.mencoesNegativas.reduce((acc, value) => value += acc),
+        positiveTotal: data.mencoesPositivas.reduce((acc, value) => value += acc)
+      })
+    } 
+    getChartsData();
+  }, [])
+
+  console.log('dataFrequency', dataFrequency);
   return (
     <>
       <Header />
@@ -69,42 +119,46 @@ const Dashboard = () => {
             Search
           </div>
         </Card>
-        <LineContainer>
-          <Card
-            width="24%"
-            height="100px"
-          >
-            <div>
-              20/01/2019 á 20/05/2021
-            </div>
-          </Card>
-          <Card
-            width="24%"
-          >
-            <div>
-              10 mil tweets coletados
-            </div>
-          </Card>
-          <Card
-            width="24%"
-          >
-            <div>
-              1 mil tweets positivos
-            </div>
-          </Card>
-          <Card
-            width="24%"
-          >
-            <div>
-              5 mil tweets negativos
-            </div>
-          </Card>
-        </LineContainer>
-        <LineContainer>
-          <Card width="100%">
-            <Line type data={data} options={options} height={100} />
-          </Card>
-        </LineContainer>
+        {totals && (
+          <LineContainer>
+            <Card
+              width="24%"
+              height="100px"
+            >
+              <div>
+                20/01/2019 á 20/05/2021
+              </div>
+            </Card>
+            <Card
+              width="24%"
+            >
+              <div>
+                {totals.total} tweets coletados
+              </div>
+            </Card>
+            <Card
+              width="24%"
+            >
+              <div>
+                {totals.positiveTotal} tweets positivos
+              </div>
+            </Card>
+            <Card
+              width="24%"
+            >
+              <div>
+                {totals.negativeTotal} tweets negativos
+              </div>
+            </Card>
+          </LineContainer>
+        )}
+        {dataFrequency && (
+          <LineContainer>
+            <Card width="100%">
+              <Line type data={dataFrequency} options={options} height={100} />
+            </Card>
+          </LineContainer>
+        )}
         <LineContainer>
           <Card width="100%">
             <Line type data={data} options={options} height={100} />
