@@ -1,9 +1,10 @@
 import React from 'react';
 import Header from '../../components/Header';
-import { Line, Pie } from 'react-chartjs-2';
+import { Line, Doughnut } from 'react-chartjs-2';
 import LineContainer from '../../components/LineContainer';
 import Card from '../../components/Card';
 import Content from '../../components/Content';
+import SearchForm from '../../components/SearchForm';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { getData } from '../../api/api';
@@ -91,7 +92,7 @@ const Dashboard = () => {
         labels: data.datas,
         datasets: [
           {
-            label: 'Frequencia de menções pelo tempo',
+            label: 'Frequencia de menções por tempo',
             data: data.mencoes,
             fill: false,
             backgroundColor: 'rgb(255, 99, 132)',
@@ -115,9 +116,7 @@ const Dashboard = () => {
       {/* Search Options */}
       <Content>
         <Card>
-          <div>
-            Search
-          </div>
+          <SearchForm />
         </Card>
         {totals && (
           <LineContainer>
@@ -160,15 +159,15 @@ const Dashboard = () => {
           </LineContainer>
         )}
         <LineContainer>
-          <Card width="100%">
-            <Line type data={data} options={options} height={100} />
+          <Card width="49%" >
+            <Doughnut type data={dataPie} width={100} height={400} options={{
+              responsive: true,
+              maintainAspectRatio: false,
+            }} />
           </Card>
-        </LineContainer>
-        <LineContainer>
-          <Pie type data={dataPie} width={100} height={400} options={{
-            responsive: true,
-            maintainAspectRatio: false,
-          }} />
+          <Card width="49%" >
+            <Line type data={data} options={options} height={100} width={150} />
+          </Card>
         </LineContainer>
       </Content>
     </>
