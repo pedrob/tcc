@@ -1,20 +1,20 @@
-import { Form, FormHeader, Line } from './styles';
+import { Form, FormHeader, Line, SubmitButton } from './styles';
 import { Collapse } from 'reactstrap';
 
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useState } from 'react';
 
-interface SearchParams {
+export interface SearchParams {
 	termo: string;
 	dataInicio: string;
 	dataFim: string;
 	pais: string;
-	linguagem: string;
-	qtdMax: number;
+	qtdMax: string;
+	linguagem?: string;
 }
 
 interface IProps {
-	searchFunction?: (params: SearchParams) => void;
+	searchFunction: (params: SearchParams) => void;
 }
 
 const SearchForm = ({ searchFunction }: IProps) => {
@@ -24,7 +24,7 @@ const SearchForm = ({ searchFunction }: IProps) => {
 		SearchParams
 	>();
 
-	const onSubmit: SubmitHandler<SearchParams> = (data) => console.log(data);
+	const onSubmit: SubmitHandler<SearchParams> = (data) => searchFunction(data);
 
 	const toggle = () => setIsOpen(!isOpen);
 
@@ -38,7 +38,7 @@ const SearchForm = ({ searchFunction }: IProps) => {
 			</FormHeader>
 			<Collapse isOpen={isOpen}>
 				<input
-					{...(register('termo'), { required: true })}
+					{...(register('termo', { required: true}))}
 					placeholder="Termo de busca"
 				/>
 				<Line>
@@ -72,9 +72,12 @@ const SearchForm = ({ searchFunction }: IProps) => {
 						<option value={100}>100</option>
 						<option value={1000}>1000</option>
 						<option value={10000}>10000</option>
+						<option value={100000}>100000</option>
 					</select>
 				</Line>
-				<input type="submit" />
+				<div style={{width: '100%', display: 'flex', height: 35}}>
+					<SubmitButton type="submit">Buscar tweets</SubmitButton>
+				</div>
 			</Collapse>
 		</Form>
 	);

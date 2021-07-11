@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { SearchParams } from '../components/SearchForm';
 
 const api = axios.create({
-	baseURL: 'http://localhost:5000/'
+	baseURL: 'http://localhost:5000'
 });
 
 export interface APIResponse {
@@ -14,16 +15,18 @@ export interface APIResponse {
 	total: number;
 }
 
-export const getData = async (): Promise<APIResponse> => {
-	const { data } = await api.post('analizar', {
-		termo: 'Bolsonaro Presidente 2022',
-		dataInicio: '2019-01-01',
-		dataFim: '2021-05-01',
-		pais: 'Brasil',
-		linguagem: 'pt-br',
-		qtdMax: 1000,
-		metodoAnalise: 'vader'
-	});
-	console.log('Data', data);
+const lenguageMap: {[key: string]:string} = {
+	'Brasil': 'pt-br',
+	'Estados Unidos': 'en'
+}
+
+export const getData = async (paramsData: SearchParams): Promise<APIResponse> => {
+	const { data } = await api.post('/analizar', 
+		{
+			...paramsData, 
+			qtdMax: parseInt(paramsData.qtdMax), 
+			linguagem: lenguageMap[paramsData.pais]
+		}
+	);
 	return data;
 };

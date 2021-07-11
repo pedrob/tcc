@@ -4,7 +4,7 @@ import sys
 def redis_connect():
     try:
         client = redis.Redis(
-            host="localhost",
+            host="redis",
             port=6379,
             password="teste",
             db=0,

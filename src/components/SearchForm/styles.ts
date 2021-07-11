@@ -13,6 +13,7 @@ export const Form = styled.form`
 	select {
 		height: 40px;
 		margin-top: 20px;
+		margin-bottom: 20px;
 	}
 `;
 
@@ -20,9 +21,6 @@ export const FormHeader = styled.header`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	/* height: 60px; */
-	padding: 12px 0;
-	/* background-color: red; */
 `;
 
 export const Line = styled.div`
@@ -33,4 +31,11 @@ export const Line = styled.div`
 	select {
 		width: 49%;
 	}
+`;
+
+export const SubmitButton = styled.button`
+	width: 100px;
+	height: 100%;
+	margin: 0 auto;
+	border-radius: 4px;
 `;
