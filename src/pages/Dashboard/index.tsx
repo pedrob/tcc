@@ -9,6 +9,8 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { getData } from '../../api/api';
 import { parseFrequecyChart, parseNegPosChart, parsePieChart, parseTotals } from '../../utils/parser';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { CSSProperties } from 'styled-components';
 
 interface Dataset {
   label: string;
@@ -29,46 +31,6 @@ export interface Totals {
   negativeTotal: number;
 }
 
-// const data = {
-//   labels: ['1', '2', '3', '4', '5', '6'],
-//   datasets: [
-//     {
-//       label: '# of Votes',
-//       data: [12, 19, 3, 5, 2, 3],
-//       fill: false,
-//       backgroundColor: 'rgb(255, 99, 132)',
-//       borderColor: 'rgba(255, 99, 132, 0.2)',
-//     },
-//   ],
-// };
-
-// const dataPie = {
-//   labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-//   datasets: [
-//     {
-//       label: '# of Votes',
-//       data: [12, 19, 3, 5, 2, 3],
-//       backgroundColor: [
-//         'rgba(255, 99, 132, 0.2)',
-//         'rgba(54, 162, 245, 0.2)',
-//         'rgba(255, 206, 86, 0.2)',
-//         'rgba(75, 192, 192, 0.2)',
-//         'rgba(153, 102, 255, 0.2)',
-//         'rgba(255, 159, 64, 0.2)',
-//       ],
-//       borderColor: [
-//         'rgba(255, 99, 132, 1)',
-//         'rgba(54, 162, 235, 1)',
-//         'rgba(255, 206, 86, 1)',
-//         'rgba(75, 192, 192, 1)',
-//         'rgba(153, 102, 255, 1)',
-//         'rgba(255, 159, 64, 1)',
-//       ],
-//       borderWidth: 1,
-//     },
-//   ],
-// };
-
 const options = {
   scales: {
     yAxes: [
@@ -86,9 +48,21 @@ const Dashboard = () => {
   const [dataFrequency, setDataFrequence] = useState<DataChart>();
   const [dataNegPos, setDataNegPos] = useState<DataChart>();
   const [dataPieChart, setDataPieChart] = useState<DataChart>();
+  const [positiveTweets, setPositiveTweets] = useState<{[key: string]: string[]}>();
+  const [negativeTweets, setNegativeTweets] = useState<{[key: string]: string[]}>();
   const [totals, setTotals] = useState<Totals>();
   const [fetchState, setFetchState] = useState<'idle'|'loading'|'resolved'>('idle');
+  const [modal, setModal] = useState(false);
+  const [selectedTweets, setSelectedTweets] = useState<string[]>([]);
 
+  const toggle = () => {
+    if(modal) {
+      setSelectedTweets([])
+      setModal(false);
+    } else {
+      setModal(true);
+    }
+  };
 
   const searchData = async (dataParams: SearchParams) => {
     setFetchState('loading')
@@ -97,13 +71,24 @@ const Dashboard = () => {
     setDataNegPos(parseNegPosChart(data));
     setDataPieChart(parsePieChart(data));
     setTotals(parseTotals(data));
+    setPositiveTweets(data.tweetsPositivos);
+    setNegativeTweets(data.tweetsNegativos);
     setFetchState('resolved')
+  }
+
+  const cardStyle: CSSProperties = {
+    width: '100%', 
+    height: '100%', 
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontWeight: 'bold',
+    color: "#fff"
   }
 
   return (
     <>
       <Header />
-      {/* Search Options */}
       <Content>
         <Card>
           <SearchForm searchFunction={searchData} />
@@ -116,30 +101,34 @@ const Dashboard = () => {
           <LineContainer>
             <Card
               width="24%"
-              height="100px"
+              height="80px"
+              background="#3e826e"
             >
-              <div>
+              <div style={cardStyle}>
                 20/01/2019 á 20/05/2021
               </div>
             </Card>
             <Card
               width="24%"
+              background="#3e826e"
             >
-              <div>
+              <div style={cardStyle}>
                 {totals.total} tweets coletados
               </div>
             </Card>
             <Card
               width="24%"
+              background="#3e826e"
             >
-              <div>
+              <div style={cardStyle}>
                 {totals.positiveTotal} tweets positivos
               </div>
             </Card>
             <Card
               width="24%"
+              background="#3e826e"
             >
-              <div>
+              <div style={cardStyle}>
                 {totals.negativeTotal} tweets negativos
               </div>
             </Card>
@@ -158,14 +147,80 @@ const Dashboard = () => {
               <Doughnut type data={dataPieChart} width={100} height={400} options={{
                 responsive: true,
                 maintainAspectRatio: false,
+                onClick: (e:any, element:any) => {
+                  if (element.length > 0) {
+                    if (positiveTweets && negativeTweets) {
+                      const index = element[0].index;
+                      console.log(element)
+                      if (index === 0) {                        
+                        setSelectedTweets([...Object.keys(positiveTweets).map(key => positiveTweets[key])].flat())
+                        toggle();
+                      } else {
+                        setSelectedTweets([...Object.keys(negativeTweets).map(key => negativeTweets[key])].flat())
+                        toggle();
+                      }
+                    }
+                  }
+                },
               }} />
             </Card>
             <Card width="49%" >
-              <Line type data={dataNegPos} options={options} height={100} width={150} />
+              <Line type 
+                data={dataNegPos} 
+                options={{
+                  ...options, 
+                  onClick: (e:any, element:any) => {
+                    if (element.length > 0) {
+                      if (positiveTweets && negativeTweets) {
+                        const datasetIndex = element[0].datasetIndex;
+                        const index = element[0].index;
+                        const label = dataNegPos.labels[index]
+                        if (datasetIndex === 0) {
+                          setSelectedTweets(positiveTweets[label]);
+                          toggle();
+                        } else {
+                          setSelectedTweets(negativeTweets[label]);
+                          toggle();
+                        }
+                      }
+                    }
+                  },
+                }} 
+                height={100} 
+                width={150}
+              />
             </Card>
           </LineContainer>
         )}
       </Content>
+      <Modal isOpen={modal} toggle={toggle} style={{borderRadius: 4}}>
+        <ModalHeader>
+            Tweets Selecionados
+        </ModalHeader>
+        <ModalBody style={{background: '#f1f1f1', }}>
+          <div style={{
+            overflowY: 'auto',
+            height: 310,
+          }}>
+            {selectedTweets.length > 0 && selectedTweets.map(tweet => (
+              <p
+                style={{
+                  // borderStyle: 'solid',
+                  border: "1px solid #3e826e",
+                  padding: "2px 4px",
+                  marginLeft: 8,
+                  marginRight: 8,
+                  borderRadius: 4,
+                  background: '#fff'
+                }}
+              >{tweet}</p>
+            ))}
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={toggle}>Fechar</Button>
+        </ModalFooter>
+      </Modal>
     </>
   );
 }

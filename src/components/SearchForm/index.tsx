@@ -3,14 +3,13 @@ import { Collapse } from 'reactstrap';
 
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { FiChevronUp, FiChevronDown } from 'react-icons/fi'
 
 export interface SearchParams {
 	termo: string;
 	dataInicio: string;
 	dataFim: string;
-	pais: string;
 	qtdMax: string;
-	linguagem?: string;
 }
 
 interface IProps {
@@ -30,11 +29,15 @@ const SearchForm = ({ searchFunction }: IProps) => {
 
 	return (
 		<Form onSubmit={handleSubmit(onSubmit)}>
-			<FormHeader>
+			<FormHeader onClick={toggle}>
 				<span>
 					<strong>Parâmetros de busca</strong>
 				</span>
-				<button onClick={toggle}>abrir</button>
+				{!isOpen ? (
+					<FiChevronDown size={35} cursor={"pointer"} onClick={toggle} color={"#56C0A2"} />
+				) : (
+					<FiChevronUp size={35} cursor={"pointer"} onClick={toggle} color={"#56C0A2"} />
+				)}
 			</FormHeader>
 			<Collapse isOpen={isOpen}>
 				<input
@@ -60,19 +63,11 @@ const SearchForm = ({ searchFunction }: IProps) => {
 						}}
 						placeholder="Data de fim"
 					/>
-				</Line>
-				<Line>
-					<select {...register('pais')}>
-						<option>País da busca</option>
-						<option value="Brasil">Brasil</option>
-						<option value="USA">Estados Unidos</option>
-					</select>
 					<select {...register('qtdMax')}>
 						<option>Quantidade Máxima de tweets</option>
 						<option value={100}>100</option>
 						<option value={1000}>1000</option>
 						<option value={10000}>10000</option>
-						<option value={100000}>100000</option>
 					</select>
 				</Line>
 				<div style={{width: '100%', display: 'flex', height: 35}}>
