@@ -17,6 +17,13 @@ def adicionar_valor_analise_de_sentimentos(neutro, pos, neg, res):
     res['mencoesPositivas'].append(pos)
     res['mencoesNegativas'].append(neg)
 
+def adicionar_tweets(res, conteudo, data, chave):
+    listaTweets = res[chave].get(data, None)
+    if listaTweets != None:
+        res[chave][data].append(conteudo)
+    else:
+        res[chave][data] = [conteudo]
+
 def processar_dados(termo):
     df = pd.read_csv('tweets.csv', encoding='utf-8')
     df.drop_duplicates(['text'], inplace=True)
@@ -30,8 +37,8 @@ def processar_dados(termo):
         'mencoesNegativas': [],
         'mencoesNeutras': [],
         'datas': [],
-        'tweetsPositivos': [],
-        'tweetsNegativos': [],
+        'tweetsPositivos': {},
+        'tweetsNegativos': {},
         'total': total
     }
 
@@ -44,22 +51,22 @@ def processar_dados(termo):
         if data_ref in resposta['datas']:
             if analise['compound'] >= 0.1:
                 resposta['mencoesPositivas'][-1] += 1
-                if len(resposta['tweetsPositivos']) < 10:
-                    resposta['tweetsPositivos'].append(conteudo_texto)
+                adicionar_tweets(resposta,conteudo_texto,data_ref,'tweetsPositivos')
             elif analise['compound'] > -0.1 and analise['compound'] < 0.1:
                 resposta['mencoesNeutras'][-1] += 1
             else:
                 resposta['mencoesNegativas'][-1] += 1
-                if len(resposta['tweetsNegativos']) < 10:
-                    resposta['tweetsNegativos'].append(conteudo_texto)
+                adicionar_tweets(resposta,conteudo_texto,data_ref,'tweetsNegativos')
             resposta['mencoes'][-1] += 1
         else:
             if analise['compound'] >= 0.1:
                 adicionar_valor_analise_de_sentimentos(0, 1, 0, resposta)
+                adicionar_tweets(resposta,conteudo_texto,data_ref,'tweetsPositivos')
             elif analise['compound'] > -0.1 and analise['compound'] < 0.1:
                 adicionar_valor_analise_de_sentimentos(1, 0, 0, resposta)
             else:
                 adicionar_valor_analise_de_sentimentos(0, 0, 1, resposta)
+                adicionar_tweets(resposta,conteudo_texto,data_ref,'tweetsNegativos')
 
             resposta['mencoes'].append(1)
             resposta['datas'].append(data_ref)
