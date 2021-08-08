@@ -2,3 +2,5 @@ api.http
 __pycache__/
 redis-data/
 node_modules
+*.csv
+.venv

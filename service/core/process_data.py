@@ -1,6 +1,9 @@
 import pandas as pd
 import json
 import os
+# from textblob import TextBlob
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from googletrans import Translator
 
 def converter_data(data):
     nova_data = data.split("-")
@@ -27,28 +30,37 @@ def processar_dados(termo):
         'mencoesNegativas': [],
         'mencoesNeutras': [],
         'datas': [],
-        "total": total
+        'tweetsPositivos': [],
+        'tweetsNegativos': [],
+        'total': total
     }
 
-    for conteudo_texto, data, mencoes_neutras, polaridade in zip(df.text, df.date, df.neu_w, df.polarity):
+    analisador = SentimentIntensityAnalyzer()
+    tradutor = Translator()
+    for conteudo_texto, data in zip(df.text, df.date):
         data_ref = converter_data(data)
+        traducao = tradutor.translate(conteudo_texto, dest='en').text
+        analise = analisador.polarity_scores(traducao)
         if data_ref in resposta['datas']:
-            if mencoes_neutras == 1:
+            if analise['compound'] >= 0.1:
+                resposta['mencoesPositivas'][-1] += 1
+                if len(resposta['tweetsPositivos']) < 10:
+                    resposta['tweetsPositivos'].append(conteudo_texto)
+            elif analise['compound'] > -0.1 and analise['compound'] < 0.1:
                 resposta['mencoesNeutras'][-1] += 1
             else:
-                if polaridade > 0:
-                    resposta['mencoesPositivas'][-1] += 1
-                else:
-                    resposta['mencoesNegativas'][-1] += 1
+                resposta['mencoesNegativas'][-1] += 1
+                if len(resposta['tweetsNegativos']) < 10:
+                    resposta['tweetsNegativos'].append(conteudo_texto)
             resposta['mencoes'][-1] += 1
         else:
-            if mencoes_neutras == 1:
+            if analise['compound'] >= 0.1:
+                adicionar_valor_analise_de_sentimentos(0, 1, 0, resposta)
+            elif analise['compound'] > -0.1 and analise['compound'] < 0.1:
                 adicionar_valor_analise_de_sentimentos(1, 0, 0, resposta)
             else:
-                if polaridade > 0:
-                    adicionar_valor_analise_de_sentimentos(0, 1, 0, resposta)
-                else:
-                    adicionar_valor_analise_de_sentimentos(0, 0, 1, resposta)
+                adicionar_valor_analise_de_sentimentos(0, 0, 1, resposta)
+
             resposta['mencoes'].append(1)
             resposta['datas'].append(data_ref)
 
@@ -57,6 +69,6 @@ def processar_dados(termo):
     resposta['mencoesPositivas'].reverse()
     resposta['mencoesNegativas'].reverse()
     resposta['datas'].reverse()
-    os.remove('tweets.csv')
+    # os.remove('tweets.csv')
     return json.dumps(resposta)
 

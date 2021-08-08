@@ -6,10 +6,10 @@ def get_csv_tweets(parametros):
     q=parametros['termo'],
     since=parametros['dataInicio'],
     until=parametros['dataFim'],
-    near=parametros['pais'],
-    lang=parametros['linguagem'],
+    near="Brasil",
+    lang="pt-br",
     max_tweets=parametros['qtdMax']
   )
-  tweets.get_sentiment(method="vader")
+  # tweets.get_sentiment(method="vader")
   tweets.to_csv("./tweets.csv")
 
