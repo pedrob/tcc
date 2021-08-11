@@ -54,6 +54,9 @@ const Dashboard = () => {
   const [fetchState, setFetchState] = useState<'idle'|'loading'|'resolved'>('idle');
   const [modal, setModal] = useState(false);
   const [selectedTweets, setSelectedTweets] = useState<string[]>([]);
+  const [datePeriodStart, setDatePeriodStart] = useState<Date>();
+  const [datePeriodEnd, setDatePeriodEnd] = useState<Date>();
+
 
   const toggle = () => {
     if(modal) {
@@ -67,6 +70,8 @@ const Dashboard = () => {
   const searchData = async (dataParams: SearchParams) => {
     setFetchState('loading')
     const data = await getData(dataParams);
+    setDatePeriodStart(new Date(dataParams.dataInicio.replace(/-/g, '\/')));
+    setDatePeriodEnd(new Date(dataParams.dataFim.replace(/-/g, '\/')));
     setDataFrequence(parseFrequecyChart(data));
     setDataNegPos(parseNegPosChart(data));
     setDataPieChart(parsePieChart(data));
@@ -80,10 +85,18 @@ const Dashboard = () => {
     width: '100%', 
     height: '100%', 
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    fontWeight: 'bold',
-    color: "#fff"
+  }
+
+  const totalsStyle: CSSProperties = {
+    fontSize: 30,
+    fontWeight: 'bold'
+  }
+  const periodStyle: CSSProperties = {
+    fontSize: 16,
+    fontWeight: 'bold'
   }
 
   return (
@@ -101,35 +114,54 @@ const Dashboard = () => {
           <LineContainer>
             <Card
               width="24%"
-              height="80px"
-              background="#3e826e"
+              height="100px"
             >
               <div style={cardStyle}>
-                20/01/2019 á 20/05/2021
+                <div style={periodStyle}>
+                  {datePeriodStart?.toLocaleDateString()}
+                </div>
+                <div>
+                  à
+                </div>
+                <div style={periodStyle}>
+                  {datePeriodEnd?.toLocaleDateString()}
+                </div>
               </div>
             </Card>
             <Card
               width="24%"
-              background="#3e826e"
             >
               <div style={cardStyle}>
-                {totals.total} tweets coletados
+                <div style={totalsStyle}>
+                  {totals.total}
+                </div>
+                <div>
+                  Tweets coletados
+                </div>
               </div>
             </Card>
             <Card
               width="24%"
-              background="#3e826e"
             >
               <div style={cardStyle}>
-                {totals.positiveTotal} tweets positivos
+                <div style={totalsStyle}>
+                  {totals.positiveTotal}
+                </div>
+                <div>
+                  Tweets positivos
+                </div>
               </div>
             </Card>
             <Card
               width="24%"
-              background="#3e826e"
             >
               <div style={cardStyle}>
-                {totals.negativeTotal} tweets negativos
+                <div style={totalsStyle}>
+                  {totals.negativeTotal}
+                </div>
+                <div>
+                  Tweets negativos
+                </div>
               </div>
             </Card>
           </LineContainer>

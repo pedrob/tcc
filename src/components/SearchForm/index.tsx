@@ -23,7 +23,7 @@ const SearchForm = ({ searchFunction }: IProps) => {
 		SearchParams
 	>();
 
-	const onSubmit: SubmitHandler<SearchParams> = (data) => searchFunction(data);
+	const onSubmit: SubmitHandler<SearchParams> = (data:any) => searchFunction(data);
 
 	const toggle = () => setIsOpen(!isOpen);
 
