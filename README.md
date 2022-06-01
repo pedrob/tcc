@@ -1,6 +1,6 @@
-# Description
+# VIDAS
 
-This project is an interactive visual dashboard, for sentiment analisys of Tweets.
+VIDAS (Visual Interactive DAShboard) is an interactive visual dashboard, for sentiment analisys of Tweets.
 
 The project was initially conceived as the undergraduate thesis from Analysis and Systems Development course on the [IFRN](https://portal.ifrn.edu.br/),
 and the original implementation can be found in the "original" branch.
