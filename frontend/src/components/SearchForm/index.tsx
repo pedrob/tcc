@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { FiChevronUp, FiChevronDown } from 'react-icons/fi'
 
 export interface SearchParams {
-	termo: string;
+	term: string;
 	startDate: string;
 	endDate: string;
 	qtdMax: string;

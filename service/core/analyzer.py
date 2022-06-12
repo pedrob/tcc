@@ -66,6 +66,7 @@ def process_data(term):
 
             response['mentions'].append(1)
             response['dates'].append(date_ref)
+            print(f"Added new values to response ({date_ref})")
 
     response['mentions'].reverse()
     response['neutralMentions'].reverse()
@@ -74,6 +75,8 @@ def process_data(term):
     response['dates'].reverse()
     
     os.remove('tweets.csv')
+    
+    print("Proccessment finalized!")
     
     return json.dumps(response)
 
