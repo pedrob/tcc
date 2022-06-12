@@ -1,7 +1,7 @@
 import redis
 import sys
 
-def redis_connect():
+def connect():
     try:
         client = redis.Redis(
             host="redis",

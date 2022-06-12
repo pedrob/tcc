@@ -6,7 +6,6 @@ import Card from '../../components/Card';
 import Content from '../../components/Content';
 import SearchForm, { SearchParams } from '../../components/SearchForm';
 import { useState } from 'react';
-import { useEffect } from 'react';
 import { getData } from '../../api/api';
 import { parseFrequecyChart, parseNegPosChart, parsePieChart, parseTotals } from '../../utils/parser';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
@@ -70,14 +69,14 @@ const Dashboard = () => {
   const searchData = async (dataParams: SearchParams) => {
     setFetchState('loading')
     const data = await getData(dataParams);
-    setDatePeriodStart(new Date(dataParams.dataInicio.replace(/-/g, '\/')));
-    setDatePeriodEnd(new Date(dataParams.dataFim.replace(/-/g, '\/')));
+    setDatePeriodStart(new Date(dataParams.startDate.replace(/-/g, '\/')));
+    setDatePeriodEnd(new Date(dataParams.endDate.replace(/-/g, '\/')));
     setDataFrequence(parseFrequecyChart(data));
     setDataNegPos(parseNegPosChart(data));
     setDataPieChart(parsePieChart(data));
     setTotals(parseTotals(data));
-    setPositiveTweets(data.tweetsPositivos);
-    setNegativeTweets(data.tweetsNegativos);
+    setPositiveTweets(data.positiveTweets);
+    setNegativeTweets(data.negativeTweets);
     setFetchState('resolved')
   }
 
@@ -107,9 +106,9 @@ const Dashboard = () => {
           <SearchForm searchFunction={searchData} />
         </Card>
         {fetchState === 'loading' && 
-        (<div>Buscando dados... (Isso pode levar alguns minutos)</div>)}
+        (<div>Fetching data... (This could take some minutes)</div>)}
         {fetchState === 'resolved' && !dataFrequency &&
-        (<div>não foi encontrado dados para esse termo</div>)}
+        (<div>No results matched your search.</div>)}
         {totals && fetchState === 'resolved' &&  (
           <LineContainer>
             <Card
@@ -136,7 +135,7 @@ const Dashboard = () => {
                   {totals.total}
                 </div>
                 <div>
-                  Tweets coletados
+                  Collected tweets
                 </div>
               </div>
             </Card>
@@ -148,7 +147,7 @@ const Dashboard = () => {
                   {totals.positiveTotal}
                 </div>
                 <div>
-                  Tweets positivos
+                  Positive tweets
                 </div>
               </div>
             </Card>
@@ -160,7 +159,7 @@ const Dashboard = () => {
                   {totals.negativeTotal}
                 </div>
                 <div>
-                  Tweets negativos
+                  Negative tweets
                 </div>
               </div>
             </Card>
@@ -227,7 +226,7 @@ const Dashboard = () => {
       </Content>
       <Modal isOpen={modal} toggle={toggle} style={{borderRadius: 4}}>
         <ModalHeader>
-            Tweets Selecionados
+            Selected tweets
         </ModalHeader>
         <ModalBody style={{background: '#f1f1f1', }}>
           <div style={{
@@ -250,7 +249,7 @@ const Dashboard = () => {
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={toggle}>Fechar</Button>
+          <Button color="secondary" onClick={toggle}>Close</Button>
         </ModalFooter>
       </Modal>
     </>

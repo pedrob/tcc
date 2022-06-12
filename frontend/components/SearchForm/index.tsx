@@ -7,8 +7,8 @@ import { FiChevronUp, FiChevronDown } from 'react-icons/fi'
 
 export interface SearchParams {
 	termo: string;
-	dataInicio: string;
-	dataFim: string;
+	startDate: string;
+	endDate: string;
 	qtdMax: string;
 }
 
@@ -19,9 +19,7 @@ interface IProps {
 const SearchForm = ({ searchFunction }: IProps) => {
 	const [ isOpen, setIsOpen ] = useState(false);
 
-	const { register, handleSubmit, formState: { errors } } = useForm<
-		SearchParams
-	>();
+	const { register, handleSubmit } = useForm<SearchParams>();
 
 	const onSubmit: SubmitHandler<SearchParams> = (data:any) => searchFunction(data);
 
@@ -31,7 +29,7 @@ const SearchForm = ({ searchFunction }: IProps) => {
 		<Form onSubmit={handleSubmit(onSubmit)}>
 			<FormHeader onClick={toggle}>
 				<span>
-					<strong>Parâmetros de busca</strong>
+					<strong>Search params</strong>
 				</span>
 				{!isOpen ? (
 					<FiChevronDown size={35} cursor={"pointer"} onClick={toggle} color={"#56C0A2"} />
@@ -41,37 +39,37 @@ const SearchForm = ({ searchFunction }: IProps) => {
 			</FormHeader>
 			<Collapse isOpen={isOpen}>
 				<input
-					{...(register('termo', { required: true}))}
-					placeholder="Termo de busca"
+					{...(register('term', { required: true}))}
+					placeholder="Search term"
 				/>
 				<Line>
 					<input
-						{...register('dataInicio', { required: true })}
+						{...register('startDate', { required: true })}
 						type="text"
 						onFocus={(e) => {
 							e.currentTarget.type = 'date';
 							e.currentTarget.focus();
 						}}
-						placeholder="Data de início"
+						placeholder="Start date"
 					/>
 					<input
-						{...register('dataFim', { required: true })}
+						{...register('endDate', { required: true })}
 						type="text"
 						onFocus={(e) => {
 							e.currentTarget.type = 'date';
 							e.currentTarget.focus();
 						}}
-						placeholder="Data de fim"
+						placeholder="End date"
 					/>
 					<select {...register('qtdMax')}>
-						<option>Quantidade Máxima de tweets</option>
+						<option>Max quantity of tweets</option>
 						<option value={100}>100</option>
 						<option value={1000}>1000</option>
 						<option value={10000}>10000</option>
 					</select>
 				</Line>
 				<div style={{width: '100%', display: 'flex', height: 35}}>
-					<SubmitButton type="submit">Buscar tweets</SubmitButton>
+					<SubmitButton type="submit">Search tweets</SubmitButton>
 				</div>
 			</Collapse>
 		</Form>
