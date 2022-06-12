@@ -11,7 +11,7 @@ export default function Routes() {
     <Router>
       <Switch>
         <Route path="/dashboard" exact component={() => <Dashboard />} />
-        <Route path="/*" exact component={() => <h1>Página não encontrada</h1>} />
+        <Route path="/*" exact component={() => <h1>Page not found.</h1>} />
       </Switch>
     </Router>
   )

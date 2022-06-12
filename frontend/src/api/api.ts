@@ -7,19 +7,19 @@ const api = axios.create({
 
 
 export interface APIResponse {
-	termo: string;
-	mencoes: number[];
-	mencoesPositivas: number[];
-	mencoesNegativas: number[];
-	mencoesNeutras: number[];
-	tweetsPositivos: {[key: string]: string[]},
-	tweetsNegativos: {[key: string]: string[]},
-	datas: string[];
+	term: string;
+	mentions: number[];
+	positiveMentions: number[];
+	negativeMentions: number[];
+	neutralMentions: number[];
+	positiveTweets: {[key: string]: string[]},
+	negativeTweets: {[key: string]: string[]},
+	dates: string[];
 	total: number;
 }
 
 export const getData = async (paramsData: SearchParams): Promise<APIResponse> => {
-	const { data } = await api.post('/analizar', 
+	const { data } = await api.post('/analyze', 
 		{
 			...paramsData, 
 			qtdMax: parseInt(paramsData.qtdMax),

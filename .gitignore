@@ -4,3 +4,5 @@ redis-data/
 node_modules
 *.csv
 .venv
+
+__pycache__/

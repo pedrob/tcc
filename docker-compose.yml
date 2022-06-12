@@ -11,9 +11,9 @@ services:
       - redis
   web:
     container_name: web
-    build: .
+    build: ./frontend
     volumes:
-      - ./:/web
+      - ./frontend/:/web
       - /web/node_modules
     ports:
       - 3000:3000

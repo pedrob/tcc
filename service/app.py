@@ -1,8 +1,8 @@
 import json
-from core import get_data
-from core import process_data
-from cache import redis_client
-from utils import create_hash
+from core import scrapper
+from core import analyzer
+from cache import redis
+from utils import hash
 from flask import Flask, request
 from flask_cors import CORS
 from datetime import timedelta
@@ -12,20 +12,19 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/analizar", methods=['POST'])
-def analizar():
-    # TODO: mudar para metodo get e passar query strings
-    cliente_redis = redis_client.redis_connect()
-    parametros = request.json
-    chave_cache = create_hash.criarHash(parametros)
-    resposta_do_cache = cliente_redis.get(chave_cache)
-    if resposta_do_cache is not None:
-        return resposta_do_cache
+@app.route("/analyze", methods=['POST'])
+def analyze():
+    redis_client = redis.connect()
+    params = request.json
+    cache_key = hash.create_hash(params)
+    cache_response = redis_client.get(cache_key)
+    if cache_response:
+        return cache_response
 
-    get_data.get_csv_tweets(parametros)
-    resposta = process_data.processar_dados(parametros['termo'])
-    cliente_redis.setex(chave_cache, timedelta(days=1), value=resposta, )
-    return resposta
+    scrapper.get_tweets_csv(params)
+    response = analyzer.process_data(params['term'])
+    redis_client.setex(cache_key, timedelta(days=1), value=response, )
+    return response
 
 
 if __name__ == '__main__':
